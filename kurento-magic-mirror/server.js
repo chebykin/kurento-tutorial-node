@@ -25,11 +25,13 @@ var ws = require('ws');
 var kurento = require('kurento-client');
 var fs    = require('fs');
 var https = require('https');
+kurento.register('kurento-module-thatoverlay');
+
 
 var argv = minimist(process.argv.slice(2), {
     default: {
         as_uri: 'https://localhost:8443/',
-        ws_uri: 'ws://localhost:8888/kurento'
+        ws_uri: 'ws://95.213.204.89:8888/kurento'
     }
 });
 
@@ -236,18 +238,18 @@ function createMediaElements(pipeline, ws, callback) {
             return callback(error);
         }
 
-        pipeline.create('FaceOverlayFilter', function(error, faceOverlayFilter) {
+        pipeline.create('thatoverlay.ThatOverlay', function(error, filter) {
             if (error) {
                 return callback(error);
             }
 
-            faceOverlayFilter.setOverlayedImage(url.format(asUrl) + 'img/mario-wings.png',
-                    -0.35, -1.2, 1.6, 1.6, function(error) {
+            filter.setup(30, 30, "USERNAME", "Arial 16", 1, 1, 1, 1.0, "255.255.255.255" + "\n" + "12JAN2016 16:23:11Z",
+              "Arial 16", 1, 1, 1, 0.5, 45, function(error) {
                 if (error) {
                     return callback(error);
                 }
 
-                return callback(null, webRtcEndpoint, faceOverlayFilter);
+                return callback(null, webRtcEndpoint, filter);
             });
         });
     });
